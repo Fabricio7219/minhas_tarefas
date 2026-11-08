@@ -93,6 +93,52 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.pushNamedAndRemoveUntil(context, Rotas.login, (rota) => false);
   }
 
+  /// Quantas tarefas estão em cada situação de prazo.
+  int _contar(StatusPrazo status) =>
+      _tarefas.where((t) => t.statusPrazo() == status).length;
+
+  /// Faixa de alerta no topo quando há tarefas vencidas ou perto do prazo.
+  Widget _alertaPrazos() {
+    final vencidas = _contar(StatusPrazo.vencida);
+    final hoje = _contar(StatusPrazo.venceHoje);
+    final proximas = _contar(StatusPrazo.proximo);
+    if (vencidas + hoje + proximas == 0) return const SizedBox.shrink();
+
+    final mensagens = <String>[
+      if (vencidas > 0) '$vencidas vencida(s)',
+      if (hoje > 0) '$hoje vence(m) hoje',
+      if (proximas > 0) '$proximas perto do prazo',
+    ];
+    // Vermelho se tem algo vencido ou para hoje; amarelo se só está perto.
+    final grave = vencidas + hoje > 0;
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: grave ? Colors.red.shade50 : Colors.amber.shade50,
+        border: Border.all(color: grave ? Colors.red : Colors.amber.shade800),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.notifications_active,
+            color: grave ? Colors.red : Colors.amber.shade800,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Atenção: ${mensagens.join(' | ')}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final pendentes = _tarefas.where((t) => !t.concluida).length;
@@ -117,6 +163,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               : Column(
                   children: [
+                    _alertaPrazos(),
                     Padding(
                       padding: const EdgeInsets.all(12),
                       child: Text(

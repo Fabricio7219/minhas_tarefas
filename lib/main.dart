@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'routes.dart';
@@ -29,6 +30,10 @@ class MinhasTarefasApp extends StatelessWidget {
         colorSchemeSeed: Colors.indigo,
         useMaterial3: true,
       ),
+      // Deixa textos do Flutter (ex.: calendário) em português do Brasil.
+      locale: const Locale('pt', 'BR'),
+      supportedLocales: const [Locale('pt', 'BR')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
       // O app sempre começa no login (rota '/').
       initialRoute: Rotas.login,
       // Todas as rotas passam por aqui (inclui a proteção de telas).

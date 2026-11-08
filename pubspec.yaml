@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Traduções do Flutter (deixa o calendário em português)
+  flutter_localizations:
+    sdk: flutter
 
   # Banco de dados SQLite (Android / iOS / macOS)
   sqflite: ^2.4.1

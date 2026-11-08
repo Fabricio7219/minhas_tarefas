@@ -11,7 +11,8 @@ import '../models/usuario.dart';
 /// (Mesma ideia da classe SQLHelper vista na Aula 23.)
 class DatabaseService {
   static const _nomeArquivo = 'minhas_tarefas.db';
-  static const _versao = 1;
+  // Versão 2: adicionada a coluna data_entrega na tabela tarefas.
+  static const _versao = 2;
 
   // Guarda o banco já aberto para não abrir o arquivo toda hora.
   static Database? _banco;
@@ -34,6 +35,8 @@ class DatabaseService {
       onConfigure: (db) async => db.execute('PRAGMA foreign_keys = ON'),
       // Executado só quando o banco ainda não existe.
       onCreate: _criarTabelas,
+      // Executado quando o banco do aparelho é de uma versão antiga.
+      onUpgrade: _atualizarTabelas,
     );
   }
 
@@ -55,9 +58,21 @@ class DatabaseService {
         descricao TEXT,
         concluida INTEGER NOT NULL DEFAULT 0,
         data_criacao TEXT NOT NULL,
+        data_entrega TEXT,
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
       )
     ''');
+  }
+
+  /// Atualiza bancos criados em versões anteriores sem perder os dados.
+  static Future<void> _atualizarTabelas(
+    Database db,
+    int versaoAntiga,
+    int versaoNova,
+  ) async {
+    if (versaoAntiga < 2) {
+      await db.execute('ALTER TABLE tarefas ADD COLUMN data_entrega TEXT');
+    }
   }
 
   // ===================== USUÁRIOS =====================
@@ -91,14 +106,16 @@ class DatabaseService {
     return db.insert('tarefas', dados);
   }
 
-  /// READ - lista as tarefas de um usuário (pendentes primeiro, depois as mais novas).
+  /// READ - lista as tarefas de um usuário.
+  /// Ordem: pendentes primeiro; entre elas, a entrega mais próxima primeiro
+  /// (as sem data vão para o final); depois as mais novas.
   static Future<List<Tarefa>> listarTarefas(int usuarioId) async {
     final db = await banco;
     final resultado = await db.query(
       'tarefas',
       where: 'usuario_id = ?',
       whereArgs: [usuarioId],
-      orderBy: 'concluida ASC, id DESC',
+      orderBy: 'concluida ASC, data_entrega IS NULL, data_entrega ASC, id DESC',
     );
     return resultado.map((linha) => Tarefa.fromMap(linha)).toList();
   }

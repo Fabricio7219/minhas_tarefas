@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:minhas_tarefas/models/tarefa.dart';
 import 'package:minhas_tarefas/screens/login_screen.dart';
 import 'package:minhas_tarefas/services/auth_service.dart';
+import 'package:minhas_tarefas/utils/datas.dart';
 import 'package:minhas_tarefas/utils/validadores.dart';
 
 void main() {
@@ -33,6 +34,37 @@ void main() {
     expect(tarefa.toMap()['concluida'], 1); // bool vira 1 no SQLite
     expect(copia.titulo, 'Estudar Flutter');
     expect(copia.concluida, isTrue);
+  });
+
+  group('Prazo de entrega', () {
+    final hoje = DateTime(2026, 11, 10);
+
+    Tarefa comEntrega(String? data, {bool concluida = false}) => Tarefa(
+          usuarioId: 1,
+          titulo: 'Trabalho',
+          concluida: concluida,
+          dataCriacao: '2026-11-01T08:00:00',
+          dataEntrega: data,
+        );
+
+    test('classifica pelo número de dias restantes', () {
+      expect(comEntrega(null).statusPrazo(hoje), StatusPrazo.semPrazo);
+      expect(comEntrega('2026-11-08').statusPrazo(hoje), StatusPrazo.vencida);
+      expect(comEntrega('2026-11-10').statusPrazo(hoje), StatusPrazo.venceHoje);
+      expect(comEntrega('2026-11-12').statusPrazo(hoje), StatusPrazo.proximo);
+      expect(comEntrega('2026-11-20').statusPrazo(hoje), StatusPrazo.emDia);
+    });
+
+    test('tarefa concluída não aparece como vencida', () {
+      final feita = comEntrega('2026-11-01', concluida: true);
+      expect(feita.statusPrazo(hoje), StatusPrazo.concluida);
+    });
+
+    test('dias restantes e formato da data', () {
+      expect(comEntrega('2026-11-08').diasRestantes(hoje), -2);
+      expect(Datas.formatar('2026-11-08'), '08/11/2026');
+      expect(Datas.paraBanco(DateTime(2026, 3, 5)), '2026-03-05');
+    });
   });
 
   test('Hash da senha não é a senha original', () {
