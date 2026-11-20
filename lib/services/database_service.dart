@@ -12,7 +12,7 @@ import '../models/usuario.dart';
 class DatabaseService {
   static const _nomeArquivo = 'minhas_tarefas.db';
   // Versão 2: adicionada a coluna data_entrega na tabela tarefas.
-  static const _versao = 2;
+  static const _versao = 3;
 
   // Guarda o banco já aberto para não abrir o arquivo toda hora.
   static Database? _banco;
@@ -59,6 +59,7 @@ class DatabaseService {
         concluida INTEGER NOT NULL DEFAULT 0,
         data_criacao TEXT NOT NULL,
         data_entrega TEXT,
+         prioridade TEXT NOT NULL DEFAULT 'Média',
         FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
       )
     ''');
@@ -73,6 +74,12 @@ class DatabaseService {
     if (versaoAntiga < 2) {
       await db.execute('ALTER TABLE tarefas ADD COLUMN data_entrega TEXT');
     }
+     if (versaoAntiga < 3) {
+      await db.execute(
+        "ALTER TABLE tarefas ADD COLUMN prioridade TEXT NOT NULL DEFAULT 'Média'",
+      );
+    }
+
   }
 
   // ===================== USUÁRIOS =====================

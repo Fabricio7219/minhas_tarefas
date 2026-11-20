@@ -10,7 +10,7 @@ Projeto desenvolvido para a disciplina de Desenvolvimento Mobile — Fatec.
 
 ## Descrição
 
-Cada pessoa cria sua conta, faz login e gerencia a própria lista de tarefas: cria, vê, edita, marca como concluída e exclui. Cada tarefa pode ter uma **data de entrega**, e o app destaca com cores as tarefas vencidas, as que vencem hoje e as que estão perto do prazo. As tarefas de um usuário não aparecem para outro. Os dados ficam salvos no aparelho, então nada se perde ao fechar o app.
+Cada pessoa cria sua conta, faz login e gerencia a própria lista de tarefas: cria, vê, edita, marca como concluída e exclui. Cada tarefa tem uma **prioridade** (Baixa, Média ou Alta) e pode ter uma **data de entrega**, e o app destaca com cores as tarefas vencidas, as que vencem hoje e as que estão perto do prazo. As tarefas de um usuário não aparecem para outro. Os dados ficam salvos no aparelho, então nada se perde ao fechar o app.
 
 ## Funcionalidades principais
 
@@ -24,6 +24,7 @@ Cada pessoa cria sua conta, faz login e gerencia a própria lista de tarefas: cr
 | **L**istar tarefas do usuário | `screens/home_screen.dart` |
 | **A**tualizar tarefa (editar e marcar como concluída) | `tarefa_form_screen.dart` / `home_screen.dart` |
 | **D**eletar tarefa (com confirmação) | `screens/home_screen.dart` |
+| Prioridade (Baixa, Média, Alta) escolhida por botões e mostrada com cor | `tarefa_form_screen.dart` + `widgets/tarefa_card.dart` |
 | Data de entrega com calendário | `screens/tarefa_form_screen.dart` |
 | Aviso de prazo por cor (vencida, vence hoje, perto do prazo, em dia) | `widgets/tarefa_card.dart` + `models/tarefa.dart` |
 | Alerta no topo com o total de tarefas atrasadas ou perto do prazo | `screens/home_screen.dart` |
@@ -129,8 +130,9 @@ Arquivo SQLite `minhas_tarefas.db`, criado automaticamente na primeira execuçã
 | concluida | INTEGER (0 ou 1) | SQLite não tem booleano |
 | data_criacao | TEXT | Data/hora no formato ISO 8601 |
 | data_entrega | TEXT (opcional) | Prazo no formato aaaa-mm-dd |
+| prioridade | TEXT (padrão 'Média') | Baixa, Média ou Alta |
 
-**Versões do banco:** a versão 1 criou as tabelas. A versão 2 adicionou a coluna `data_entrega`. Quem já tinha o app instalado recebe a coluna nova pelo `onUpgrade` (`ALTER TABLE`), sem perder as tarefas.
+**Versões do banco:** a versão 1 criou as tabelas. A versão 2 adicionou a coluna `data_entrega` e a versão 3 adicionou a coluna `prioridade`. Quem já tinha o app instalado recebe as colunas novas pelo `onUpgrade` (`ALTER TABLE`), sem perder as tarefas.
 
 **Situação do prazo** (calculada em `Tarefa.statusPrazo()`):
 

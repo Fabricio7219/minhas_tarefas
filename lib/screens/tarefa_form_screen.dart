@@ -24,6 +24,7 @@ class _TarefaFormScreenState extends State<TarefaFormScreen> {
   final _descricaoController = TextEditingController();
   bool _salvando = false;
   String? _dataEntrega; // "aaaa-mm-dd" ou null (sem prazo)
+   String _prioridade = 'Média'; // pririodade escolida na tela
 
   bool get _editando => widget.tarefa != null;
 
@@ -35,6 +36,7 @@ class _TarefaFormScreenState extends State<TarefaFormScreen> {
       _tituloController.text = widget.tarefa!.titulo;
       _descricaoController.text = widget.tarefa!.descricao;
       _dataEntrega = widget.tarefa!.dataEntrega;
+      _prioridade = widget.tarefa!.prioridade;
     }
   }
 
@@ -81,6 +83,7 @@ class _TarefaFormScreenState extends State<TarefaFormScreen> {
             concluida: original.concluida,
             dataCriacao: original.dataCriacao,
             dataEntrega: _dataEntrega,
+            prioridade: _prioridade,
           ),
         );
       } else {
@@ -92,6 +95,7 @@ class _TarefaFormScreenState extends State<TarefaFormScreen> {
             descricao: _descricaoController.text.trim(),
             dataCriacao: DateTime.now().toIso8601String(),
             dataEntrega: _dataEntrega,
+            prioridade: _prioridade,
           ),
         );
       }
@@ -130,6 +134,33 @@ class _TarefaFormScreenState extends State<TarefaFormScreen> {
                 icone: Icons.notes,
                 maxLinhas: 3,
               ),
+              
+                       // Prioridade: 3 botões, só um fica marcado
+              const Text('Prioridade:'),
+              Row(
+                children: [
+                  ChoiceChip(
+                    label: const Text('Baixa'),
+                    selected: _prioridade == 'Baixa',
+                    onSelected: (_) => setState(() => _prioridade = 'Baixa'),
+                  ),
+                  const SizedBox(width: 8),
+                  ChoiceChip(
+                    label: const Text('Média'),
+                    selected: _prioridade == 'Média',
+                    onSelected: (_) => setState(() => _prioridade = 'Média'),
+                  ),
+                  const SizedBox(width: 8),
+                  ChoiceChip(
+                    label: const Text('Alta'),
+                    selected: _prioridade == 'Alta',
+                    onSelected: (_) => setState(() => _prioridade = 'Alta'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              
+              
               // Campo da data de entrega (opcional).
               Card(
                 margin: const EdgeInsets.only(bottom: 16),

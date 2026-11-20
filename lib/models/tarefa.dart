@@ -20,6 +20,8 @@ class Tarefa {
   final bool concluida;
   final String dataCriacao; // guardada como texto no formato ISO 8601
   final String? dataEntrega; // "aaaa-mm-dd" ou null quando não tem prazo
+   final String prioridade;
+
 
   Tarefa({
     this.id,
@@ -29,6 +31,7 @@ class Tarefa {
     this.concluida = false,
     required this.dataCriacao,
     this.dataEntrega,
+    this.prioridade = 'Média'
   });
 
   /// Converte o objeto em Map para salvar no SQLite.
@@ -42,6 +45,7 @@ class Tarefa {
       'concluida': concluida ? 1 : 0,
       'data_criacao': dataCriacao,
       'data_entrega': dataEntrega,
+      'prioridade': prioridade,
     };
   }
 
@@ -55,6 +59,7 @@ class Tarefa {
       concluida: map['concluida'] == 1,
       dataCriacao: map['data_criacao'] as String,
       dataEntrega: map['data_entrega'] as String?,
+       prioridade: (map['prioridade'] ?? 'Média') as String,
     );
   }
 
@@ -69,6 +74,7 @@ class Tarefa {
       concluida: concluida ?? this.concluida,
       dataCriacao: dataCriacao,
       dataEntrega: dataEntrega,
+       prioridade: prioridade,
     );
   }
 

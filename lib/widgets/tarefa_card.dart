@@ -84,6 +84,20 @@ class TarefaCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (tarefa.descricao.isNotEmpty) Text(tarefa.descricao),
+               Text(
+              'Prioridade: ${tarefa.prioridade}',
+              style: TextStyle(
+                // Alta = vermelho | Média = amarelo | Baixa = verde
+                color: tarefa.prioridade == 'Alta'
+                    ? Colors.red
+                    : tarefa.prioridade == 'Média'
+                        ? Colors.amber.shade800
+                        : Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+
             if (aviso != null)
               Padding(
                 padding: const EdgeInsets.only(top: 4),
